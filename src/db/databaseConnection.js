@@ -3,7 +3,7 @@ const config = require("../config/default.config");
 const bluebird = require("bluebird");
 
 mongoose.Promise = bluebird;
-console.log("========================================", config.MONGO_DB_URL);
+//console.log("========================================", config.MONGO_DB_URL);
 mongoose.connect(config.MONGO_DB_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,

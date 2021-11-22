@@ -1,10 +1,16 @@
-const http = require("http");
-const config = require("./config");
-const app = require("./app")();
-const server = require('http').createServer(app);
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const keys = require("./config/default.config");
 require("./db/databaseConnection");
-console.log(config.NODE_JS_PORT);
+require("./models/bookModel");
+require("./helpers/redis.herlper");
 
-server.listen(config.NODE_JS_PORT);
-console.log(`talenq api server listens on port ${config.NODE_JS_PORT}`);
-console.log(`NODE_ENV = ${process.env.NODE_ENV || "development"}`);
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+
+require("./routes/index")(app);
+
+app.listen(port, () => console.log(`Server is listening on port ${port}!`));

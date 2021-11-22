@@ -1,51 +1,60 @@
-
-
+const mongoose = require("mongoose");
 const redis = require("redis");
-const { REDIS } = require("../config/default.config");
+const util = require("util");
+const keys = require("../config/default.config");
 
-const config = require("../config/default.config");
-
-let client = redis.createClient(REDIS.PORT, REDIS.IP);
-
-if (process.env.NODE_ENV == "production") {
-  //Works on server
-  client.auth(config.redisAuthKey, function (err) {
-   console.log("Redis server authenticated");
-  });
-}
-
+const client = redis.createClient(keys.REDIS);
+client.hget = util.promisify(client.hget);
 client.on("connect", () => {
- console.log("Redis server connected");
+  console.log("Redis server connected :: " + keys.REDIS.HOST);
 });
 
-client.on("error", function (err) {
-  console.log("Redis server connection failed");
-});
+// create reference for .exec
+const exec = mongoose.Query.prototype.exec;
 
-const set = async (key, value) => {
-  await client.set(key, JSON.stringify(value), (error, result) => {
-    if (error)
-      console.log("Failed to set cache");
-    return result;
-  });
+// create new cache function on prototype
+mongoose.Query.prototype.cache = function (options = { expire: 60 }) {
+  this.useCache = true;
+  this.expire = options.expire;
+  this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);
+
+  return this;
 };
 
-const get = async (key) => {
-  return new Promise((resolve) => {
-    client.get(key, function (err, result) {
-      resolve(JSON.parse(result));
-    });
-  });
-};
+// override exec function to first check cache for data
+mongoose.Query.prototype.exec = async function () {
+  if (!this.useCache) {
+    return await exec.apply(this, arguments);
+  }
 
-const remove = async (key) => {
-  await client.del(key, function (err, result) {
-    return result;
+  const key = JSON.stringify({
+    ...this.getQuery(),
+    collection: this.mongooseCollection.name,
   });
+
+  // get cached value from redis
+  const cacheValue = await client.hget(this.hashKey, key);
+
+  // if cache value is not found, fetch data from mongodb and cache it
+  if (!cacheValue) {
+    const result = await exec.apply(this, arguments);
+    client.hset(this.hashKey, key, JSON.stringify(result));
+    client.expire(this.hashKey, this.expire);
+
+    console.log("Return data from MongoDB");
+    return result;
+  }
+
+  // return found cachedValue
+  const doc = JSON.parse(cacheValue);
+  console.log("Return data from Redis");
+  return Array.isArray(doc)
+    ? doc.map((d) => new this.model(d))
+    : new this.model(doc);
 };
 
 module.exports = {
-  set,
-  get,
-  remove,
+  clearHash(hashKey) {
+    client.del(JSON.stringify(hashKey));
+  },
 };
