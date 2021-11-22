@@ -1,2 +1,2 @@
 # booklist
-Bookilist with Redis 
+Booklist App with Redis 
