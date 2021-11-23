@@ -4,7 +4,7 @@ const config = require("../config/default.config");
 const _ = require("lodash");
 
 module.exports = (app) => {
-  app.get("/api/v1/book", async (req, res) => {
+  app.get("/api/v1/books", async (req, res) => {
     let pageNumber = 0;
     let limitValue = config.PAGE_SIZE;
     if (req.query.pageNumber) {
