@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "21aac2dc-3d5d-456e-9a64-54f54708a0b1",
+		"name": "BookStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/book",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"book"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Trading with CandleStick Charts\",\n        \"category\":\"Finance\",\n        \"description\":\"Discover ways of profiting from CandleStick tarding\",\n        \"author\": \"Balkrishna Sadekar\",\n        \"price\":\"495\",\n        \"content\":\"Trading techniques\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/book",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"book"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

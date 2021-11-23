@@ -6,14 +6,14 @@ const _ = require("lodash");
 module.exports = (app) => {
   app.get("/api/v1/book", async (req, res) => {
     let pageNumber = 0;
-    let limit = config.PAGE_SIZE;
+    let limitValue = config.PAGE_SIZE;
     if (req.query.pageNumber) {
       pageNumber = _.toNumber(req.query.pageNumber);
     }
-    if (req.query.limit) {
-      limit = _.toNumber(req.query.limit);
+    if (req.query.limitValue) {
+      limitValue = _.toNumber(req.query.limitValue);
     }
-    const books = await Book.find().cache({ expire: 3000 });
+    const books = await Book.find().limit(limitValue).skip(pageNumber).cache({ expire: 3000 });
 
     res.json(books);
   });

@@ -9,9 +9,5 @@ module.exports = {
     HOST: "redis-13051.c264.ap-south-1-1.ec2.cloud.redislabs.com",
     PASSWORD: "xZoz28j5vwWVyz3mUZLOG0zjVuNthSOk",
   },
-  PAGE_SIZE: 10,
+  PAGE_SIZE: 4,
 };
-/*module.exports = {
-    MONGO_URI: 'YOUR_MONGODB_CONNECTION_STRING_GOES_HERE',
-    REDIS_URI: 'YOUR_REDIS_CONNECTION_STRING_GOES_HERE'
-  }; */
